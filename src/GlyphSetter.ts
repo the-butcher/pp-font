@@ -1,7 +1,7 @@
 import { along as turf_along } from '@turf/along';
 import { length as turf_length } from '@turf/length';
 import { LineString, MultiPolygon, Point, Position } from "geojson";
-import { IProjectableProperties, Projection, TProjectableFeature, Transformation } from "pp-geom";
+import { IProjectableProperties, PPProjection, PPTransformation, TProjectableFeature } from "pp-geom";
 import { IGlyphSetter, TGlyphFeature } from ".";
 
 export class GlyphSetter implements IGlyphSetter {
@@ -56,7 +56,7 @@ export class GlyphSetter implements IGlyphSetter {
     private distance: number;
 
     private constructor(labelLine: TProjectableFeature<LineString, IProjectableProperties>, adv: number) {
-        this.labelLine = Projection.projectFeature(labelLine, '4326'); // be sure the label-line is in WGS84/EPSG:4326
+        this.labelLine = PPProjection.projectFeature(labelLine, '4326'); // be sure the label-line is in WGS84/EPSG:4326
         this.adv = adv;
         this.labelLineLength = turf_length(labelLine, {
             units: labelLine.properties.unitName
@@ -79,8 +79,8 @@ export class GlyphSetter implements IGlyphSetter {
             units: this.labelLine.properties.unitName
         }).geometry;
         // convert both positions to proj-cs
-        const labelPointProjA = Projection.projectGeometry(labelPoint4326A, this.labelLine.properties.projectors['proj']);
-        let labelPointProjB = Projection.projectGeometry(labelPoint4326B, this.labelLine.properties.projectors['proj']);
+        const labelPointProjA = PPProjection.projectGeometry(labelPoint4326A, this.labelLine.properties.projectors['proj']);
+        let labelPointProjB = PPProjection.projectGeometry(labelPoint4326B, this.labelLine.properties.projectors['proj']);
 
         // const distD = Math.sqrt((labelPoint4326B.coordinates[0] - labelPoint4326A.coordinates[0]) ** 2 + (labelPoint4326B.coordinates[1] - labelPoint4326A.coordinates[1]) ** 2);
         const distM = Math.sqrt((labelPointProjB.coordinates[0] - labelPointProjA.coordinates[0]) ** 2 + (labelPointProjB.coordinates[1] - labelPointProjA.coordinates[1]) ** 2);
@@ -92,7 +92,7 @@ export class GlyphSetter implements IGlyphSetter {
             units: this.labelLine.properties.unitName
         }).geometry;
         // convert both positions to proj-cs
-        labelPointProjB = Projection.projectGeometry(labelPoint4326B, this.labelLine.properties.projectors['proj']);
+        labelPointProjB = PPProjection.projectGeometry(labelPoint4326B, this.labelLine.properties.projectors['proj']);
 
         // calculate angle between position
         const angle = Math.atan2(labelPointProjB.coordinates[1] - labelPointProjA.coordinates[1], labelPointProjB.coordinates[0] - labelPointProjA.coordinates[0]);
@@ -100,12 +100,12 @@ export class GlyphSetter implements IGlyphSetter {
         // recalculate with corrected distance
         // calculate matrix for char transformation
 
-        const matrixB = Transformation.matrixTranslationInstance(labelPointProjA.coordinates[0], labelPointProjA.coordinates[1]);
-        const matrixC = Transformation.matrixRotationInstance(angle);
-        const matrixD = Transformation.matrixTranslationInstance(0, -glyphFeature.properties.midY);
+        const matrixB = PPTransformation.matrixTranslationInstance(labelPointProjA.coordinates[0], labelPointProjA.coordinates[1]);
+        const matrixC = PPTransformation.matrixRotationInstance(angle);
+        const matrixD = PPTransformation.matrixTranslationInstance(0, -glyphFeature.properties.midY);
 
         // transform and add
-        const transformedGlyphCoordinates = Transformation.transformPosition3(glyphFeature.geometry.coordinates, Transformation.matrixMultiply(matrixB, matrixC, matrixD)); //
+        const transformedGlyphCoordinates = PPTransformation.transformPosition3(glyphFeature.geometry.coordinates, PPTransformation.matrixMultiply(matrixB, matrixC, matrixD)); //
         this.labelMultiPolygon.coordinates.push(...transformedGlyphCoordinates);
 
     }
@@ -120,7 +120,7 @@ export class GlyphSetter implements IGlyphSetter {
                 projType: 'proj'
             }
         };
-        return Projection.projectFeature(label, '4326');
+        return PPProjection.projectFeature(label, '4326');
 
     }
 
