@@ -5,14 +5,14 @@ describe('facetype font', () => {
 
   test('resolves font instance', async () => {
 
-    const fontInstanceA = await FacetypeFont.getInstance('Noto Serif Thin', 10);
-    const fontInstanceB = await FacetypeFont.getInstance('Noto Serif Thin', 10);
+    const fontInstanceA = await FacetypeFont.getInstance('noto_serif___thin_regular', 10);
+    const fontInstanceB = await FacetypeFont.getInstance('noto_serif___thin_regular', 10);
 
     expect(fontInstanceA).toBeDefined();
     expect(fontInstanceB).toBeDefined();
 
-    expect(fontInstanceA.getName()).toBe("Noto Serif Thin");
-    expect(fontInstanceB.getName()).toBe("Noto Serif Thin");
+    expect(fontInstanceA.getName()).toBe("noto_serif___thin_regular");
+    expect(fontInstanceB.getName()).toBe("noto_serif___thin_regular");
 
     expect(fontInstanceA.getId()).toBe(fontInstanceB.getId());
     expect(fontInstanceA.getScale()).toBe(fontInstanceB.getScale());
@@ -21,7 +21,7 @@ describe('facetype font', () => {
 
   test('resolves char instances', async () => {
 
-    const fontInstance = await FacetypeFont.getInstance('Noto Serif Thin', 10);
+    const fontInstance = await FacetypeFont.getInstance('noto_serif___thin_regular', 10);
 
     const charMultiPolygon0 = fontInstance.getCharMultiPolygon('a');
     const charMultiPolygon1 = fontInstance.getCharMultiPolygon('b');

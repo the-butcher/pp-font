@@ -35,7 +35,15 @@ export interface IGlyphSetter {
     getLabel: () => TProjectableFeature<MultiPolygon, IProjectableProperties>; // TODO :: determine if i.e. hatching of characters would be a thing done in the pp-font library itself or in some dedicated style code
 }
 
-export type TPredefinedFontName = 'Noto Serif' | 'Noto Serif Thin' | 'Noto Serif Medium' | 'Noto Serif Bold';
+export type TPredefinedFontName =
+    'noto_serif________regular' |
+    'noto_serif_________italic' |
+    'noto_serif___thin_regular' |
+    'noto_serif___thin__italic' |
+    'noto_serif_medium_regular' |
+    'noto_serif_medium__italic' |
+    'noto_serif___bold_regular' |
+    'noto_serif___bold__italic';
 
 export interface IFacetypeFont {
     glyphs: { [K in string]: IFacetypeGlyph };

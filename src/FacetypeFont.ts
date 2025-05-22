@@ -9,10 +9,14 @@ import { simplify as turf_simplify } from '@turf/simplify';
 export class FacetypeFont {
 
     private static PREDEFINED_FONT_PROVIDERS: { [K in TPredefinedFontName]: () => Promise<IFacetypeFont> } = {
-        'Noto Serif': () => new FacetypeFontLoader().load('/noto_serif________regular.json'),
-        'Noto Serif Thin': () => new FacetypeFontLoader().load('/noto_serif___thin_regular.json'),
-        'Noto Serif Medium': () => new FacetypeFontLoader().load('/noto_serif_medium_regular.json'),
-        'Noto Serif Bold': () => new FacetypeFontLoader().load('/noto_serif___bold_regular.json'),
+        'noto_serif________regular': () => new FacetypeFontLoader().load('/noto_serif________regular.json'),
+        'noto_serif_________italic': () => new FacetypeFontLoader().load('/noto_serif_________italic.json'),
+        'noto_serif___thin_regular': () => new FacetypeFontLoader().load('/noto_serif___thin_regular.json'),
+        'noto_serif___thin__italic': () => new FacetypeFontLoader().load('/noto_serif___thin__italic.json'),
+        'noto_serif_medium_regular': () => new FacetypeFontLoader().load('/noto_serif_medium_regular.json'),
+        'noto_serif_medium__italic': () => new FacetypeFontLoader().load('/noto_serif_medium__italic.json'),
+        'noto_serif___bold_regular': () => new FacetypeFontLoader().load('/noto_serif___bold_regular.json'),
+        'noto_serif___bold__italic': () => new FacetypeFontLoader().load('/noto_serif___bold__italic.json'),
     };
 
     private static FONT_INSTANCES: { [K: string]: FacetypeFont[] } = {
@@ -23,7 +27,6 @@ export class FacetypeFont {
         if (!this.FONT_INSTANCES[name]) {
             this.FONT_INSTANCES[name] = [];
         }
-
         let fontInstance = this.FONT_INSTANCES[name]?.find(f => f.scale === scale);
         if (fontInstance) {
             return fontInstance;
