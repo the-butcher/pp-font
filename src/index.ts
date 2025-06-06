@@ -31,7 +31,8 @@ export type TGlyphFeature = Feature<MultiPolygon, IGlyphProperties>;
  * @since 19.05.2025
  */
 export interface IGlyphSetter {
-    acceptGlyph: (glyphFeature: TGlyphFeature, adv?: number) => void;
+    acceptGlyph: (glyphFeature: TGlyphFeature) => void;
+    calculateAdv: (glyphFeature: TGlyphFeature) => number;
     getLabel: () => TProjectableFeature<MultiPolygon, IProjectableProperties>; // TODO :: determine if i.e. hatching of characters would be a thing done in the pp-font library itself or in some dedicated style code
 }
 

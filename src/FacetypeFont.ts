@@ -85,6 +85,19 @@ export class FacetypeFont {
 
     }
 
+    getLength(label: string, glyphSetter: IGlyphSetter): number {
+
+        const chars = Array.from(label);
+        let glyphFeatureProj: TGlyphFeature;
+        let length = 0;
+        for (let i = 0; i < chars.length; i++) {
+            glyphFeatureProj = this.getGlyph(chars[i]);
+            length += glyphSetter.calculateAdv(glyphFeatureProj);
+        }
+        return length;
+
+    }
+
     /**
      * glyph parsing as of https://github.com/mrdoob/three.js/blob/dev/examples/jsm/loaders/FontLoader.js
      * @param char must be

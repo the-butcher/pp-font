@@ -68,31 +68,54 @@ export class GlyphSetter implements IGlyphSetter {
         };
     }
 
-    acceptGlyph(glyphFeature: TGlyphFeature): void {
+    calculateAdv(glyphFeature: TGlyphFeature): number {
 
         // find current position along label line in label line units
         const labelPoint4326A = turf_along(this.labelLine, this.distance, {
             units: this.labelLine.properties.unitName
         }).geometry;
         // find advance position along label line in label line units
-        let labelPoint4326B = turf_along(this.labelLine, this.distance + glyphFeature.properties.hadv, {
+        const labelPoint4326B = turf_along(this.labelLine, this.distance + glyphFeature.properties.hadv, {
             units: this.labelLine.properties.unitName
         }).geometry;
         // convert both positions to proj-cs
         const labelPointProjA = PPProjection.projectGeometry(labelPoint4326A, this.labelLine.properties.projectors['proj']);
-        let labelPointProjB = PPProjection.projectGeometry(labelPoint4326B, this.labelLine.properties.projectors['proj']);
+        const labelPointProjB = PPProjection.projectGeometry(labelPoint4326B, this.labelLine.properties.projectors['proj']);
 
-        // const distD = Math.sqrt((labelPoint4326B.coordinates[0] - labelPoint4326A.coordinates[0]) ** 2 + (labelPoint4326B.coordinates[1] - labelPoint4326A.coordinates[1]) ** 2);
+        // calculate factor (which for unknown reasons can be off, like 0.6 - 0.7, but appears not to be related to web mercator scale error)
         const distM = Math.sqrt((labelPointProjB.coordinates[0] - labelPointProjA.coordinates[0]) ** 2 + (labelPointProjB.coordinates[1] - labelPointProjA.coordinates[1]) ** 2);
         const distR = glyphFeature.properties.hadv / distM;
 
+        return glyphFeature.properties.hadv * distR * this.adv;
+
+    }
+
+    acceptGlyph(glyphFeature: TGlyphFeature): void {
+
+        // find current position along label line in label line units
+        const labelPoint4326A = turf_along(this.labelLine, this.distance, {
+            units: this.labelLine.properties.unitName
+        }).geometry;
+        this.distance += this.calculateAdv(glyphFeature);
         // find advance position along label line in label line units
-        this.distance += glyphFeature.properties.hadv * distR * this.adv;
-        labelPoint4326B = turf_along(this.labelLine, this.distance, {
+        const labelPoint4326B = turf_along(this.labelLine, this.distance, {
             units: this.labelLine.properties.unitName
         }).geometry;
         // convert both positions to proj-cs
-        labelPointProjB = PPProjection.projectGeometry(labelPoint4326B, this.labelLine.properties.projectors['proj']);
+        const labelPointProjA = PPProjection.projectGeometry(labelPoint4326A, this.labelLine.properties.projectors['proj']);
+        const labelPointProjB = PPProjection.projectGeometry(labelPoint4326B, this.labelLine.properties.projectors['proj']);
+
+        // // calculate factor (which for unknown reasons can be off, like 0.6 - 0.7, but appears not to be related to web mercator scale error)
+        // const distM = Math.sqrt((labelPointProjB.coordinates[0] - labelPointProjA.coordinates[0]) ** 2 + (labelPointProjB.coordinates[1] - labelPointProjA.coordinates[1]) ** 2);
+        // const distR = glyphFeature.properties.hadv / distM;
+
+        // // find advance position along label line in label line units
+        // this.distance += glyphFeature.properties.hadv * distR * this.adv;
+        // labelPoint4326B = turf_along(this.labelLine, this.distance, {
+        //     units: this.labelLine.properties.unitName
+        // }).geometry;
+        // // convert both positions to proj-cs
+        // labelPointProjB = PPProjection.projectGeometry(labelPoint4326B, this.labelLine.properties.projectors['proj']);
 
         // calculate angle between position
         const angle = Math.atan2(labelPointProjB.coordinates[1] - labelPointProjA.coordinates[1], labelPointProjB.coordinates[0] - labelPointProjA.coordinates[0]);
