@@ -86,7 +86,8 @@ export class GlyphSetter implements IGlyphSetter {
         const distM = Math.sqrt((labelPointProjB.coordinates[0] - labelPointProjA.coordinates[0]) ** 2 + (labelPointProjB.coordinates[1] - labelPointProjA.coordinates[1]) ** 2);
         const distR = glyphFeature.properties.hadv / distM;
 
-        return glyphFeature.properties.hadv * distR * this.adv;
+        // return glyphFeature.properties.hadv * distR * this.adv;
+        return glyphFeature.properties.hadv * distR + this.adv;
 
     }
 
